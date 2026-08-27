@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Beach Manager',
+                        'Beach Booking',
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
