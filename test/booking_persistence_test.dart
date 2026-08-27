@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:beach_manager/models/beach_model.dart';
+import 'package:beach_booking/models/beach_model.dart';
 
 void main() {
   test('Booking round-trips through toJson/fromJson', () {

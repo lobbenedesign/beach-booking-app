@@ -132,17 +132,6 @@ class UserHomeScreen extends StatelessWidget {
                   textStyle: const TextStyle(fontSize: 18),
                 ),
               ),
-              const SizedBox(height: 40),
-              TextButton(
-                onPressed: () {
-                  // Navigate to admin for demo purposes
-                  context.push('/admin');
-                },
-                child: const Text(
-                  'Area Gestori (Demo)',
-                  style: TextStyle(color: Colors.white54),
-                ),
-              ),
             ],
           ),
         ),

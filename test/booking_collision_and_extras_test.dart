@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:beach_manager/models/beach_model.dart';
-import 'package:beach_manager/services/mock_data_service.dart';
-import 'package:beach_manager/services/auth_service.dart';
+import 'package:beach_booking/models/beach_model.dart';
+import 'package:beach_booking/services/mock_data_service.dart';
+import 'package:beach_booking/services/auth_service.dart';
 
 class FakeAuthService extends AuthService {
   @override

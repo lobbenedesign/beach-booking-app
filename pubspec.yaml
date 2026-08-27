@@ -1,5 +1,5 @@
-name: beach_manager
-description: A new Flutter project for Beach Management.
+name: beach_booking
+description: Customer-facing booking app for beach clubs and their restaurants — browse, book, and pay for umbrellas, tables, and extras.
 publish_to: 'none'
 version: 1.0.0+1
 
