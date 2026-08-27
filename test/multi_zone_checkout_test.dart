@@ -8,6 +8,19 @@ class FakeAuthService extends AuthService {
   User? get currentUser => User(id: 'test_user', name: 'Test User', email: 'test@example.com');
 }
 
+/// A deterministic weekday (Monday) inside season [seasonId], so price
+/// lookups don't depend on what day the test happens to run (the seeded
+/// price list only differentiates zone prices for the "Bassa Stagione" /
+/// "Alta Stagione" seasons — a date landing outside any priced season, e.g.
+/// in "Settembre" which has no zone-specific price-list entries, would make
+/// every zone silently fall back to the same defaultBasePrice).
+DateTime weekdayInSeason(MockDataService dataService, String seasonId) {
+  final season = dataService.seasons.firstWhere((s) => s.id == seasonId);
+  final monday = season.startDate
+      .add(Duration(days: (8 - season.startDate.weekday) % 7));
+  return DateTime(monday.year, monday.month, monday.day);
+}
+
 void main() {
   late MockDataService dataService;
 
@@ -20,11 +33,11 @@ void main() {
     // (standard, lower price) per the default seed data / price list.
     final umb1 = dataService.umbrellas.firstWhere((u) => u.zoneId == 'z1');
     final umb3 = dataService.umbrellas.firstWhere((u) => u.zoneId == 'z3');
-    final date = DateTime.now().add(const Duration(days: 10));
-    // Normalize to a plain weekday-safe date to keep the price deterministic
-    // across the whole day-range used below (avoid landing on Fri/Sat/Sun
-    // boundaries by using a single day).
-    final start = DateTime(date.year, date.month, date.day);
+    // Use a fixed weekday inside "Bassa Stagione" (s1), the season whose
+    // seeded price list actually differentiates z1 from z3, rather than
+    // "today + N days" which drifts throughout the year and can land in an
+    // unpriced season (a real flakiness bug this regression test caught).
+    final start = weekdayInSeason(dataService, 's1');
 
     final priceZ1 = dataService.priceForPackageOnUmbrella('p1', umb1.id, start);
     final priceZ3 = dataService.priceForPackageOnUmbrella('p1', umb3.id, start);
@@ -64,8 +77,7 @@ void main() {
 
   test('shared costs (extras, fees, discount) are pooled correctly across umbrellas', () {
     final umbrellas = dataService.umbrellas.take(2).toList();
-    final start = DateTime.now().add(const Duration(days: 20));
-    final date = DateTime(start.year, start.month, start.day);
+    final date = weekdayInSeason(dataService, 's1');
 
     final pricePerUmbrella = {
       for (final u in umbrellas) u.id: dataService.priceForPackageOnUmbrella('p1', u.id, date),
@@ -105,8 +117,7 @@ void main() {
 
   test('single-umbrella booking still works exactly as before (no regression)', () {
     final umb = dataService.umbrellas.first;
-    final date = DateTime.now().add(const Duration(days: 30));
-    final start = DateTime(date.year, date.month, date.day);
+    final start = weekdayInSeason(dataService, 's1');
     final price = dataService.priceForPackageOnUmbrella('p1', umb.id, start);
 
     final result = dataService.createMultipleBookingsAndTransactions(
